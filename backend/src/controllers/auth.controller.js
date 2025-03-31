@@ -100,29 +100,21 @@ export const updateProfile = async (req, res) => {
     if (!fullName || !email) {
       return res.status(400).json({ message: "Please fill all fields" });
     }
-    if (profilePic && !profilePic.startsWith("http")) {
-      const uploadedImage = await uploadImage(profilePic);
-      req.body.profilePic = uploadedImage;
-    }
-    if (email && !email.includes("@")) {
+    if (!email.includes("@")) {
       return res.status(400).json({ message: "Please enter a valid email" });
     }
-    if (profilePic && profilePic.includes(" ")) {
-      return res
-        .status(400)
-        .json({ message: "Profile picture URL must not contain spaces" });
+    if (profilePic && profilePic.startsWith("data:image/")) {
+      const base64Image = profilePic.split(";base64,").pop();
+      const buffer = Buffer.from(base64Image, "base64");
+      const cloudinaryResponse = await uploadImage(buffer);
+      profilePic = cloudinaryResponse.secure_url;
     }
-    if (profilePic && !profilePic.startsWith("http")) {
-      return res.status(400).json({ message: "Invalid profile picture URL" });
-    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { fullName, email, profilePic },
       { new: true }
     );
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
     res.status(200).json({
       _id: updatedUser._id,
       fullName: updatedUser.fullName,

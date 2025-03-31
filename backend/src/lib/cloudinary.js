@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import { config } from "dotenv";
+import { Readable } from "stream";
 
 config();
 
@@ -9,12 +10,27 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadImage = async (filePath) => {
+export const uploadImage = async (buffer) => {
   try {
-    const result = await cloudinary.uploader.upload(filePath, {
-      folder: "your_folder_name", // Optional: specify a folder in your Cloudinary account
+    const readableBuffer = new Readable();
+    readableBuffer.push(buffer);
+    readableBuffer.push(null); // Kết thúc luồng
+
+    return new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: "image" },
+        (error, result) => {
+          if (error) {
+            console.error("Cloudinary upload error:", error);
+            reject(new Error("Image upload failed"));
+          } else {
+            resolve(result); // Trả về URL an toàn của hình ảnh
+          }
+        }
+      );
+
+      readableBuffer.pipe(stream);
     });
-    return result.secure_url; // Return the URL of the uploaded image
   } catch (error) {
     console.error("Error uploading image to Cloudinary:", error);
     throw new Error("Image upload failed");
