@@ -4,6 +4,7 @@ import {
   login,
   logout,
   updateProfile,
+  checkAuth,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
@@ -18,8 +19,10 @@ router.post("/login", login);
 // http://localhost:5002/api/auth/logout
 router.post("/logout", logout);
 
-// update the user profile
 // http://localhost:5002/api/auth/update-profile
 router.put("/update-profile", protectRoute, updateProfile);
+
+// http://localhost:5002/api/auth/check-auth
+router.get("/check-auth", protectRoute, checkAuth);
 
 export default router;
