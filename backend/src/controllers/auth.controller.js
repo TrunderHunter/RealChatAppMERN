@@ -1,6 +1,7 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import { uploadImage } from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -99,20 +100,29 @@ export const updateProfile = async (req, res) => {
     if (!fullName || !email) {
       return res.status(400).json({ message: "Please fill all fields" });
     }
-    if (!email.includes("@")) {
+    if (profilePic && !profilePic.startsWith("http")) {
+      const uploadedImage = await uploadImage(profilePic);
+      req.body.profilePic = uploadedImage;
+    }
+    if (email && !email.includes("@")) {
       return res.status(400).json({ message: "Please enter a valid email" });
     }
-
+    if (profilePic && profilePic.includes(" ")) {
+      return res
+        .status(400)
+        .json({ message: "Profile picture URL must not contain spaces" });
+    }
+    if (profilePic && !profilePic.startsWith("http")) {
+      return res.status(400).json({ message: "Invalid profile picture URL" });
+    }
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { fullName, email, profilePic },
       { new: true }
     );
-
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
-
     res.status(200).json({
       _id: updatedUser._id,
       fullName: updatedUser.fullName,
@@ -120,7 +130,7 @@ export const updateProfile = async (req, res) => {
       profilePic: updatedUser.profilePic,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating profile:", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };
