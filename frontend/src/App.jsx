@@ -10,6 +10,7 @@ import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const { checkAuth, authUser, isCheckingAuth } = useAuthStore();
@@ -30,8 +31,6 @@ const App = () => {
     );
   }
 
-  console.log("Auth User:", authUser);
-
   return (
     <>
       <Navbar />
@@ -45,13 +44,18 @@ const App = () => {
           path="/login"
           element={!authUser ? <LoginPage /> : <Navigate to="/" />}
         />
-        <Route path="/signup" element={<SignupPage />} />
+        <Route
+          path="/signup"
+          element={!authUser ? <SignupPage /> : <Navigate to="/" />}
+        />
         <Route path="/settings" element={<SettingsPage />} />
         <Route
           path="/profile"
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
       </Routes>
+
+      <Toaster position="top-center" reverseOrder={false} />
     </>
   );
 };

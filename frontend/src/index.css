@@ -2,3 +2,23 @@
 @plugin "daisyui" {
   themes: luxury --default, bumblebee --prefersdark;
 }
+
+@keyframes custom-bounce {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  50% {
+    transform: scale(0.9) rotate(-3deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(2deg);
+  }
+}
+
+.animate-custom {
+  animation: custom-bounce 2s infinite;
+}
