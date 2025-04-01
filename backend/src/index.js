@@ -4,9 +4,18 @@ import authRoutes from "./routes/auth.route.js";
 import connectDB from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import messagesRoutes from "./routes/message.route.js";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
+
+// Middleware to enable CORS for the client URL from enywhere
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
