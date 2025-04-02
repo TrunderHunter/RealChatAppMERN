@@ -25,7 +25,6 @@ export const useAuthStore = create((set) => ({
     set({ isSigningUp: true });
     try {
       const response = await axiosInstance.post("/auth/signup", data);
-      console.log("Sign-up response:", response.data);
       set({ authUser: response.data });
       toast.success("Sign-up successful!");
     } catch (error) {
@@ -43,6 +42,34 @@ export const useAuthStore = create((set) => ({
       toast.error("Sign-up failed. Please try again.");
     } finally {
       set({ isSigningUp: false });
+    }
+  },
+
+  logout: async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+      set({ authUser: null });
+      toast.success("Logout successful!");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast.error("Logout failed. Please try again.");
+    }
+  },
+
+  login: async (data) => {
+    set({ isLoggingIn: true });
+    try {
+      const response = await axiosInstance.post("/auth/login", data);
+      set({ authUser: response.data });
+      toast.success("Login successful!");
+    } catch (error) {
+      if (error.response?.status === 400) {
+        toast.error(error.response?.data?.message || "Invalid credentials.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      set({ isLoggingIn: false });
     }
   },
 }));
