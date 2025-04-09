@@ -72,4 +72,21 @@ export const useAuthStore = create((set) => ({
       set({ isLoggingIn: false });
     }
   },
+
+  updateProfile: async (data) => {
+    set({ isUpatingProfile: true });
+    try {
+      await axiosInstance.put("/auth/update-profile", data);
+      await useAuthStore.getState().checkAuth(); // Gọi lại checkAuth để cập nhật thông tin người dùng
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error(
+        "Error updating profile:",
+        error.response?.data?.message || error.message
+      );
+      toast.error("Profile update failed. Please try again.");
+    } finally {
+      set({ isUpatingProfile: false });
+    }
+  },
 }));

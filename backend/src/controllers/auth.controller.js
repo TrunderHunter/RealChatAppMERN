@@ -1,7 +1,6 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { uploadImage } from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -103,17 +102,11 @@ export const updateProfile = async (req, res) => {
     if (!email.includes("@")) {
       return res.status(400).json({ message: "Please enter a valid email" });
     }
-    if (profilePic && profilePic.startsWith("data:image/")) {
-      const base64Image = profilePic.split(";base64,").pop();
-      const buffer = Buffer.from(base64Image, "base64");
-      const cloudinaryResponse = await uploadImage(buffer);
-      profilePic = cloudinaryResponse.secure_url;
-    }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { fullName, email, profilePic },
-      { new: true }
+      { new: true } // Trả về thông tin người dùng đã được cập nhật
     );
     res.status(200).json({
       _id: updatedUser._id,

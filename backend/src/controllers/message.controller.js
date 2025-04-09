@@ -1,6 +1,5 @@
 import Message from "../models/message.model.js";
-import User from "../models/user.model.js";
-import { uploadImage } from "../lib/cloudinary.js"; // Assuming you have a function to upload images to Cloudinary
+import User from "../models/user.model.js"; // Assuming you have a function to upload images to Cloudinary
 
 export const getUsersForSidebar = async (req, res) => {
   try {
