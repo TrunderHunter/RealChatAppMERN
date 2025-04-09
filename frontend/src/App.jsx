@@ -32,7 +32,7 @@ const App = () => {
   }
 
   return (
-    <>
+    <div data-theme="luxury">
       <Navbar />
 
       <Routes>
@@ -56,7 +56,7 @@ const App = () => {
       </Routes>
 
       <Toaster position="top-center" reverseOrder={false} />
-    </>
+    </div>
   );
 };
 
